@@ -1,0 +1,41 @@
+---
+# tasks file for rhel_fullScreen_resolution
+- hosts: localhost
+  tasks:
+  - name: Create dvd mount point
+    file:
+      state: directory
+      path: /dvd
+
+  - name: Mount local Dvd
+    mount:
+      src: "/dev/cdrom"
+      path: "/dvd"
+      state: mounted
+      fstype: "iso9660"
+
+  - name: Yum configuration for AppStream
+    yum_repository:
+      baseurl: "/dvd/AppStream"
+      name: "dvd1"
+      description: "My yum dvd1"
+      gpgcheck: no
+
+  - name: Yum configuration for BaseOS
+    yum_repository:
+      baseurl: "/dvd/BaseOS"
+      name: "dvd2"
+      description: "My yum dvd2"
+      gpgcheck: no
+  - name: Installing dependencies
+    package:
+      name: "{{ item }}"
+      state: present
+    loop:
+    - gcc
+    - perl
+    - make
+    - kernel-headers
+    - kernel-devel
+    - elfutils-libelf-devel
+      
